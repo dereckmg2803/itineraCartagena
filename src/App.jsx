@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
-
+import { Home, Login, Dashboard } from './pages'
+import { Routes, Route } from 'react-router-dom';
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <h1>Desarrollo de una plataforma de agendamiento de servicios de entretenimiento turístico en la ciudad de Cartagena 🔥🔥🔥🔥</h1>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
     </>
   )
 }
