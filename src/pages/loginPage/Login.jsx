@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -12,12 +12,50 @@ function LoginPage() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Aquí iría tu lógica de autenticación
-        console.log('Iniciando sesión con:', formData);
-        navigate('/dashboard'); // o a donde quieras redirigir
+
+        try {
+            const response = await fetch('http://localhost:3000/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.usuario?.usuario) {
+                const usuario = data.usuario.usuario;
+
+                console.log('Login exitoso ✅', usuario);
+
+                // Aquí puedes guardar datos si quieres
+                // localStorage.setItem('usuario', JSON.stringify(usuario));
+
+                // Redirige según el rol
+                if (usuario.rol === 'turista') {
+                    navigate('/turistas');
+                } else if (usuario.rol === 'proveedor') {
+                    navigate('/dashboard');
+                } else {
+                    alert('Rol no reconocido');
+                }
+
+            } else {
+                alert(data.message || 'Error al iniciar sesión');
+            }
+        } catch (error) {
+            console.error('Error al conectar con el backend:', error);
+            alert('Hubo un problema al iniciar sesión');
+        }
     };
+
+
 
     return (
         <div className="flex items-center justify-center min-h-screen">
@@ -53,6 +91,12 @@ function LoginPage() {
                         Iniciar Sesión
                     </button>
                 </form>
+                <p className="mt-4 text-center text-sm text-gray-600">
+                    ¿No tienes una cuenta?{' '}
+                    <Link to="/register" className="text-sky-600 font-semibold hover:underline">
+                        Regístrate aquí
+                    </Link>
+                </p>
             </div>
         </div>
     );
